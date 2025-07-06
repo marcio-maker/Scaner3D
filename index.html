@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair by Márcio | Diagnóstico Facial 4.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #00D1FF;
+            --primary-light: rgba(0, 209, 255, 0.2);
+            --secondary: #9C27B0;
+            --dark: #12141D;
+            --darker: #0A0B10;
+            --light: #F0F4FF;
+            --gold: #FFD700;
+            --error: #FF4D4D;
+            --success: #00FF88;
+            --tech-gradient: linear-gradient(135deg, #00D1FF 0%, #9C27B0 100%);
+            --card-bg: rgba(18, 20, 29, 0.8);
+            --neon-shadow: 0 0 15px rgba(0, 209, 255, 0.5);
+            --font-main: 'Montserrat', sans-serif;
+            --font-tech: 'Orbitron', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--darker);
+        }
+
+        header {
+            background: rgba(10, 11, 16, 0.9);
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 209, 255, 0.1);
+        }
+
+        header h1 {
+            font-family: var(--font-tech);
+            font-size: 2.2rem;
+            background: var(--tech-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        header p {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* ===== SCANNER SECTION ===== */
+        .scanner-section {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--neon-shadow);
+            height: 500px;
+            background: var(--darker);
+            border: 1px solid rgba(0, 209, 255, 0.1);
+        }
+
+        #webcam, #canvas, #staticCanvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        #staticCanvas {
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        #scanOverlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 20, 40, 0.7) 0%, rgba(5, 10, 20, 0.9) 100%);
+            display: none;
+            z-index: 5;
+        }
+
+        #scanLine {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 20px var(--primary);
+            top: 0;
+            left: 0;
+            z-index: 15;
+            animation: scan 3s linear infinite;
+            display: none;
+        }
+
+        @keyframes scan {
+            0% { top: -10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        /* ===== FACE GUIDE & ARROWS ===== */
+        .face-guide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 380px;
+            border: 2px dashed var(--primary);
+            border-radius: 40%;
+            display: none;
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: inset 0 0 30px var(--primary), 0 0 30px var(--primary);
+            transition: all 0.5s;
+        }
+
+        .face-guide.active {
+            border-color: var(--gold);
+            box-shadow: inset 0 0 40px var(--gold), 0 0 40px var(--gold);
+        }
+
+        .face-guide-arrows {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 12;
+            pointer-events: none;
+        }
+
+        .arrow {
+            position: absolute;
+            color: var(--primary);
+            font-size: 2.5rem;
+            opacity: 0;
+            transition: all 0.3s;
+            text-shadow: 0 0 15px rgba(0, 209, 255, 0.8);
+            font-weight: bold;
+        }
+
+        .arrow.active {
+            opacity: 1;
+            animation: pulseArrow 1s infinite;
+        }
+
+        #arrow-left {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation-name: pulseArrow;
+        }
+
+        #arrow-right {
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation-name: pulseArrow;
+        }
+
+        #arrow-up {
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%);
+            animation-name: pulseArrowVertical;
+        }
+
+        #arrow-down {
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            animation-name: pulseArrowVertical;
+        }
+
+        @keyframes pulseArrow {
+            0%, 100% { transform: translateX(0) translateY(-50%); }
+            50% { transform: translateX(8px) translateY(-50%); }
+        }
+
+        @keyframes pulseArrowVertical {
+            0%, 100% { transform: translateY(0) translateX(-50%); }
+            50% { transform: translateY(8px) translateX(-50%); }
+        }
+
+        /* ===== BUTTONS ===== */
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 1.5rem 3rem;
+            font-family: var(--font-tech);
+            font-size: 1.5rem;
+            font-weight: 500;
+            background: rgba(0, 209, 255, 0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: var(--neon-shadow);
+            transition: all 0.4s;
+            z-index: 100;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+        }
+
+        #startButton:hover {
+            background: rgba(0, 209, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 209, 255, 0.7);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        #startButton::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                transparent 45%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 55%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+
+        /* ===== STATUS & PROGRESS ===== */
+        .status {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--light);
+            font-family: var(--font-tech);
+            font-size: 1.2rem;
+            z-index: 50;
+            background: rgba(10, 11, 16, 0.9);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            display: none;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 209, 255, 0.5);
+            border: 1px solid var(--primary);
+            backdrop-filter: blur(5px);
+            letter-spacing: 1px;
+            min-width: 300px;
+            transition: all 0.3s;
+        }
+
+        .status.scanning {
+            background: rgba(0, 209, 255, 0.15);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .status.error {
+            background: rgba(255, 50, 50, 0.15);
+            color: var(--error);
+            border-color: var(--error);
+        }
+
+        .status.success {
+            background: rgba(0, 255, 100, 0.15);
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        .progress-container {
+            position: absolute;
+            bottom: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 450px;
+            height: 10px;
+            background: rgba(100, 150, 200, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+            z-index: 50;
+            box-shadow: inset 0 0 10px rgba(0, 50, 100, 0.3),
+                        0 0 10px rgba(0, 209, 255, 0.3);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background 0.5s ease;
+            background: linear-gradient(90deg, #00D1FF, #9C27B0);
+            box-shadow: 0 0 15px rgba(0, 209, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: progressShine 2s infinite linear;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ===== RESULT CONTAINER ===== */
+        #resultContainer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 25;
+            background: rgba(5, 10, 20, 0.9);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease;
+        }
+
+        #resultContainer.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #resultMessage {
+            color: var(--primary);
+            font-family: var(--font-tech);
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 2rem;
+            text-shadow: 0 0 15px var(--primary);
+            background: var(--card-bg);
+            padding: 1.5rem 3rem;
+            border-radius: 10px;
+            border: 1px solid var(--primary);
+            box-shadow: var(--neon-shadow);
+            letter-spacing: 2px;
+        }
+
+        #retryButton, #exploreCutsButton {
+            margin-top: 1.5rem;
+            padding: 1rem 2rem;
+            font-family: var(--font-tech);
+            font-size: 1.2rem;
+            background: var(--tech-gradient);
+            color: var(--light);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: var(--neon-shadow);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #retryButton:hover, #exploreCutsButton:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 209, 255, 0.7);
+        }
+
+        /* ===== ANALYSIS SECTION ===== */
+        .analysis-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--neon-shadow);
+            border: 1px solid rgba(0, 209, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .card.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 209, 255, 0.3);
+            border-color: rgba(0, 209, 255, 0.3);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-family: var(--font-tech);
+            font-size: 1.3rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .card h2 i {
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        .card p {
+            margin-bottom: 0.8rem;
+            color: var(--light);
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        .card .highlight {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .face-shape-display {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0, 209, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--primary);
+            font-family: var(--font-tech);
+            letter-spacing: 1px;
+        }
+
+        .measurement-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px dashed rgba(0, 209, 255, 0.2);
+            font-size: 0.9rem;
+        }
+
+        .measurement-value {
+            font-weight: 500;
+            color: var(--gold);
+            font-family: var(--font-tech);
+            letter-spacing: 1px;
+        }
+
+        .product-link {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 1rem;
+            color: var(--light);
+            font-weight: 500;
+            transition: all 0.3s;
+            background: var(--tech-gradient);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 209, 255, 0.3);
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 209, 255, 0.4);
+        }
+
+        .product-link i {
+            margin-left: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .product-link:hover i {
+            transform: translateX(3px);
+        }
+
+        /* ===== SHARE BUTTONS ===== */
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .share-btn::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0.3), transparent);
+            top: -50%;
+            left: -50%;
+            transform: rotate(30deg);
+            transition: all 0.3s;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .share-btn:hover::after {
+            top: 100%;
+            left: 100%;
+        }
+
+        .whatsapp { background: #25D366; }
+        .instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .facebook { background: #3b5998; }
+        .link { background: var(--primary); }
+
+        /* ===== LOADING & ANIMATIONS ===== */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== APPOINTMENT SECTION ===== */
+        .appointment-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--neon-shadow);
+            border: 1px solid rgba(0, 209, 255, 0.1);
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .appointment-section h2 {
+            font-family: var(--font-tech);
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .book-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 1rem 2.5rem;
+            font-family: var(--font-tech);
+            font-size: 1.2rem;
+            background: var(--tech-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 209, 255, 0.5);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        .book-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 209, 255, 0.7);
+        }
+
+        .book-button i {
+            margin-right: 0.8rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            #startButton {
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+            }
+
+            .card h2 {
+                font-size: 1.1rem;
+            }
+
+            .face-guide {
+                width: 220px;
+                height: 300px;
+            }
+
+            .status {
+                font-size: 1rem;
+                min-width: 250px;
+            }
+
+            .appointment-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .book-button {
+                font-size: 1rem;
+                padding: 0.8rem 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <header>
+        <h1>HAIR BY MARCIO</h1>
+        <p>DIAGNÓSTICO FACIAL 4.0 | TECNOLOGIA DE PONTA</p>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <section class="scanner-section" id="scannerContainer">
+                <button id="startButton">INICIAR SCAN 3D</button>
+                <video id="webcam" playsinline></video>
+                <canvas id="canvas"></canvas>
+                <canvas id="staticCanvas"></canvas>
+                <div id="scanOverlay"></div>
+                <div id="scanLine"></div>
+                <div class="face-guide"></div>
+                <div class="face-guide-arrows">
+                    <div class="arrow" id="arrow-left">←</div>
+                    <div class="arrow" id="arrow-right">→</div>
+                    <div class="arrow" id="arrow-up">↑</div>
+                    <div class="arrow" id="arrow-down">↓</div>
+                </div>
+                <div class="status" id="status">SISTEMA PRONTO</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div id="resultContainer">
+                    <div id="resultMessage">MAPEAMENTO FACIAL COMPLETO</div>
+                    <p id="face-shape-description-result" style="color: var(--light); font-size: 1rem; text-align: center; margin-top: 1rem;"></p>
+                    <button id="retryButton">REFAZER ANÁLISE</button>
+                    <button id="exploreCutsButton">EXPLORAR CORTES</button>
+                </div>
+            </section>
+
+            <section class="analysis-section">
+                <div class="card" id="analysis-card">
+                    <h2><i class="fas fa-ruler-combined"></i> ANÁLISE GEOMÉTRICA</h2>
+                    <div class="face-shape-display" id="face-shape">
+                        <span id="face-shape-text">AGUARDANDO ESCANEAMENTO 3D</span>
+                        <span class="loading" id="face-shape-loading"></span>
+                    </div>
+                    <div id="measurements">
+                        <div class="measurement-item">
+                            <span>Largura da testa:</span>
+                            <span class="measurement-value" id="forehead-width">--</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span>Largura das bochechas:</span>
+                            <span class="measurement-value" id="cheek-width">--</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span>Largura do maxilar:</span>
+                            <span class="measurement-value" id="jaw-width">--</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span>Altura do rosto:</span>
+                            <span class="measurement-value" id="face-height">--</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span>Proporção facial:</span>
+                            <span class="measurement-value" id="face-ratio">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="hairstyle-card">
+                    <h2><i class="fas fa-cut"></i> SUGESTÃO DE ESTILO</h2>
+                    <p class="highlight" id="hairstyle-suggestion">AGUARDANDO ANÁLISE FACIAL...</p>
+                    <p id="avoid-suggestion"></p>
+                    <a id="hairstyle-link" href="haircuts.html" target="_blank" rel="noopener" class="product-link">
+                        VER CORTES RECOMENDADOS <i class="fas fa-cut"></i>
+                    </a>
+                </div>
+
+                <div class="card" id="product-card">
+                    <h2><i class="fas fa-pump-soap"></i> PRODUTOS RECOMENDADOS</h2>
+                    <p id="product-suggestion">AGUARDANDO ANÁLISE FACIAL...</p>
+                    <a id="product-link" href="index_products.html" target="_blank" rel="noopener" class="product-link">
+                        VER PRODUTO RECOMENDADO <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+
+                <div class="share-buttons">
+                    <button class="share-btn whatsapp" id="share-whatsapp" title="Compartilhar no WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                    <button class="share-btn instagram" id="share-instagram" title="Compartilhar no Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </button>
+                    <button class="share-btn facebook" id="share-facebook" title="Compartilhar no Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </button>
+                    <button class="share-btn link" id="copy-link" title="Copiar link">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <div class="appointment-section">
+            <h2>Agende uma Consulta</h2>
+            <p>Entre em contato para discutir seu diagnóstico facial e receber orientações personalizadas!</p>
+            <button class="book-button" onclick="bookAppointment()">
+                <i class="fas fa-calendar-check"></i> Agendar Consulta
+            </button>
+            <a href="index_tips.html" class="back-button" style="margin-top: 1rem;">
+                <i class="fas fa-info-circle"></i> Mais Sobre Dicas Premium
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        // Configuração do Particles.js
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#00D1FF"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#00D1FF",
+                    "opacity": 0.2,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 0.5
+                        }
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Função para agendar consulta
+        function bookAppointment() {
+            const message = "Olá! Gostaria de agendar uma consulta para discutir meu diagnóstico facial. Vi no Hair by Marcio.";
+            const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Elementos do DOM
+        const elements = {
+            video: document.getElementById('webcam'),
+            canvas: document.getElementById('canvas'),
+            staticCanvas: document.getElementById('staticCanvas'),
+            staticCtx: document.getElementById('staticCanvas').getContext('2d'),
+            ctx: document.getElementById('canvas').getContext('2d'),
+            startBtn: document.getElementById('startButton'),
+            scanLine: document.getElementById('scanLine'),
+            overlay: document.getElementById('scanOverlay'),
+            faceGuide: document.querySelector('.face-guide'),
+            status: document.getElementById('status'),
+            progressBar: document.getElementById('progressBar'),
+            progressContainer: document.querySelector('.progress-container'),
+            resultContainer: document.getElementById('resultContainer'),
+            resultMessage: document.getElementById('resultMessage'),
+            retryBtn: document.getElementById('retryButton'),
+            exploreCutsBtn: document.getElementById('exploreCutsButton')
+        };
+
+        // Configurações
+        const config = {
+            scanSpeed: 1.5,
+            scanPenalty: 0.7,
+            alignmentThreshold: 0.15,
+            minFaceSize: 0.2,
+            maxFaceSize: 0.4,
+            connections: [
+                [10, 338], [338, 297], [297, 332], [332, 284], [284, 251], [251, 389], [389, 356],
+                [356, 454], [454, 323], [323, 361], [361, 288], [288, 397], [397, 365], [365, 379],
+                [379, 378], [378, 400], [400, 377], [377, 152], [152, 148], [148, 176], [176, 149],
+                [149, 150], [150, 136], [136, 172], [172, 58], [58, 132], [132, 93], [93, 234],
+                [234, 127], [127, 162], [162, 21], [21, 54], [54, 103], [103, 67], [67, 109], [109, 10],
+                [168, 6], [6, 197], [197, 195], [195, 5], [5, 4], [4, 45], [45, 220], [220, 115],
+                [78, 95], [95, 88], [88, 178], [178, 87], [87, 14], [14, 317], [317, 402], [402, 318],
+                [33, 246], [246, 161], [161, 160], [160, 159], [159, 158], [158, 157], [157, 173],
+                [362, 398], [398, 384], [384, 385], [385, 386], [386, 387], [387, 388], [388, 466]
+            ],
+            lineStyle: {
+                active: 'rgba(0, 209, 255, 0.9)',
+                static: 'rgba(0, 240, 255, 0.8)',
+                width: 1.5,
+                pointSize: 2.5
+            }
+        };
+
+        // Estado da aplicação
+        let state = {
+            scanning: false,
+            progress: 0,
+            faceDetected: false,
+            lastLandmarks: null,
+            currentResultImage: null,
+            measurementBuffer: [],
+            bufferSize: 8,
+            faceShape: null,
+            alignmentCount: 0
+        };
+
+        // Inicializa o Face Mesh
+        const faceMesh = new FaceMesh({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+        });
+
+        faceMesh.setOptions({
+            maxNumFaces: 1,
+            refineLandmarks: true,
+            minDetectionConfidence: 0.75,
+            minTrackingConfidence: 0.75
+        });
+
+        faceMesh.onResults(processResults);
+
+        // Animação inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.to("#analysis-card", {
+                duration: 0.8,
+                y: 0,
+                opacity: 1,
+                ease: "power3.out",
+                delay: 0.2
+            });
+
+            gsap.to("#hairstyle-card", {
+                duration: 0.8,
+                y: 0,
+                opacity: 1,
+                ease: "power3.out",
+                delay: 0.4
+            });
+
+            gsap.to("#product-card", {
+                duration: 0.8,
+                y: 0,
+                opacity: 1,
+                ease: "power3.out",
+                delay: 0.6,
+                onComplete: () => {
+                    document.querySelectorAll('.card').forEach(card => {
+                        card.classList.add('visible');
+                    });
+                }
+            });
+        });
+
+        // Event Listeners
+        elements.startBtn.addEventListener('click', initScanner);
+        elements.retryBtn.addEventListener('click', initScanner);
+        elements.exploreCutsBtn.addEventListener('click', () => {
+            window.location.href = `haircuts.html?shape=${state.faceShape}`;
+        });
+
+        // Função para iniciar o scanner
+        function initScanner() {
+            // Reset do estado
+            state = {
+                scanning: true,
+                progress: 0,
+                faceDetected: false,
+                lastLandmarks: null,
+                currentResultImage: null,
+                measurementBuffer: [],
+                faceShape: null,
+                alignmentCount: 0
+            };
+
+            // Configura dimensões do canvas
+            const scannerRect = document.getElementById('scannerContainer').getBoundingClientRect();
+            elements.canvas.width = scannerRect.width;
+            elements.canvas.height = scannerRect.height;
+            elements.staticCanvas.width = scannerRect.width;
+            elements.staticCanvas.height = scannerRect.height;
+
+            // Ativa elementos visuais
+            elements.startBtn.style.display = 'none';
+            elements.video.style.display = 'block';
+            elements.canvas.style.display = 'block';
+            elements.overlay.style.display = 'block';
+            elements.scanLine.style.display = 'block';
+            elements.faceGuide.style.display = 'block';
+            elements.status.style.display = 'block';
+            elements.progressContainer.style.display = 'block';
+            elements.resultContainer.style.display = 'none';
+            elements.resultContainer.classList.remove('active');
+
+            // Reseta textos
+            document.getElementById('face-shape-text').textContent = "ANALISANDO FORMATO DO ROSTO...";
+            document.getElementById('face-shape-loading').style.display = 'inline-block';
+            document.getElementById('hairstyle-suggestion').textContent = "AGUARDANDO ANÁLISE FACIAL...";
+            document.getElementById('avoid-suggestion').textContent = "";
+            document.getElementById('hairstyle-link').href = "#";
+            document.getElementById('product-suggestion').textContent = "AGUARDANDO ANÁLISE FACIAL...";
+            document.getElementById('forehead-width').textContent = "--";
+            document.getElementById('cheek-width').textContent = "--";
+            document.getElementById('jaw-width').textContent = "--";
+            document.getElementById('face-height').textContent = "--";
+            document.getElementById('face-ratio').textContent = "--";
+            document.getElementById('face-shape-description-result').textContent = ""; // Limpa a descrição
+
+            // Inicia a câmera
+            new Camera(elements.video, {
+                onFrame: async () => await faceMesh.send({ image: elements.video }),
+                width: 1280,
+                height: 720
+            }).start();
+
+            // Configura mensagem inicial
+            elements.status.textContent = "POSICIONE SEU ROSTO NO GUIA";
+            elements.status.className = "status";
+            elements.progressBar.style.width = '0%';
+            updateProgressBarColor();
+
+            // Animação de entrada
+            gsap.from("#scannerContainer", {
+                duration: 0.8,
+                scale: 0.95,
+                opacity: 0,
+                y: 20,
+                ease: "power3.out"
+            });
+        }
+
+        // Processa os resultados do Face Mesh
+        function processResults(results) {
+            if (!state.scanning) return;
+
+            elements.ctx.save();
+            elements.ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
+            
+            try {
+                elements.ctx.drawImage(results.image, 0, 0, elements.canvas.width, elements.canvas.height);
+
+                if (results.multiFaceLandmarks?.length > 0) {
+                    const landmarks = results.multiFaceLandmarks[0];
+                    const alignmentFeedback = checkFaceAlignment(landmarks);
+
+                    if (alignmentFeedback.isAligned) {
+                        state.lastLandmarks = landmarks;
+
+                        if (!state.faceDetected) {
+                            state.faceDetected = true;
+                            elements.status.textContent = "ANALISANDO DADOS BIOMÉTRICOS";
+                            elements.status.className = "status scanning";
+
+                            gsap.to(elements.faceGuide, {
+                                duration: 0.5,
+                                scale: 1.05,
+                                repeat: 1,
+                                yoyo: true,
+                                ease: "power1.inOut"
+                            });
+                        }
+
+                        drawFaceLines([landmarks], elements.ctx, true);
+                        updateFaceAnalysis(landmarks);
+
+                        if (state.progress >= 100) {
+                            completeScan();
+                        }
+                    } else {
+                        state.faceDetected = false;
+                        if (alignmentFeedback.feedback) {
+                            drawAlignmentGuides(elements.ctx, alignmentFeedback);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error processing results:", error);
+            } finally {
+                elements.ctx.restore();
+            }
+        }
+
+        // Verifica o alinhamento do rosto
+        function checkFaceAlignment(landmarks) {
+            const leftEye = landmarks[33];
+            const rightEye = landmarks[263];
+            
+            const canvasCenterX = elements.canvas.width / 2;
+            const canvasCenterY = elements.canvas.height / 2;
+            
+            // Posições normalizadas
+            const faceCenterX = ((leftEye.x + rightEye.x) / 2) * elements.canvas.width;
+            const faceCenterY = ((leftEye.y + rightEye.y) / 2) * elements.canvas.height;
+            
+            // Elementos das setas
+            const arrows = {
+                left: document.getElementById('arrow-left'),
+                right: document.getElementById('arrow-right'),
+                up: document.getElementById('arrow-up'),
+                down: document.getElementById('arrow-down')
+            };
+            
+            // Reset arrows
+            Object.values(arrows).forEach(arrow => arrow.classList.remove('active'));
+            
+            // Calcula offsets
+            const offsetX = faceCenterX - canvasCenterX;
+            const offsetY = faceCenterY - canvasCenterY;
+            
+            // Verifica alinhamento
+            let isAligned = true;
+            let message = "POSICIONE SEU ROSTO NO GUIA";
+            let feedbackType = "normal";
+            
+            // Limiares dinâmicos
+            const centerThreshold = elements.canvas.width * config.alignmentThreshold;
+            const minEyeDistance = elements.canvas.width * config.minFaceSize;
+            const maxEyeDistance = elements.canvas.width * config.maxFaceSize;
+            
+            // Distância entre os olhos
+            const eyeDistance = distanceBetween(leftEye, rightEye) * elements.canvas.width;
+            
+            // Verifica posição horizontal
+            if (faceCenterX < canvasCenterX - centerThreshold) {
+                arrows.right.classList.add('active');
+                message = "MOVA PARA A ESQUERDA →";
+                isAligned = false;
+                feedbackType = "error";
+            } 
+            else if (faceCenterX > canvasCenterX + centerThreshold) {
+                arrows.left.classList.add('active');
+                message = "← MOVA PARA A DIREITA";
+                isAligned = false;
+                feedbackType = "error";
+            }
+            
+            // Verifica posição vertical
+            if (faceCenterY < canvasCenterY - centerThreshold) {
+                arrows.down.classList.add('active');
+                message = "MOVA PARA CIMA ↓";
+                isAligned = false;
+                feedbackType = "error";
+            } 
+            else if (faceCenterY > canvasCenterY + centerThreshold) {
+                arrows.up.classList.add('active');
+                message = "↑ MOVA PARA BAIXO";
+                isAligned = false;
+                feedbackType = "error";
+            }
+            
+            // Verifica distância (zoom)
+            if (eyeDistance < minEyeDistance) {
+                message = "APROXIME-SE DA CÂMERA 🔍";
+                isAligned = false;
+                feedbackType = "error";
+            } 
+            else if (eyeDistance > maxEyeDistance) {
+                message = "AFASTE-SE DA CÂMERA 📷";
+                isAligned = false;
+                feedbackType = "error";
+            }
+            
+            // Verifica inclinação
+            const angle = Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x) * 180 / Math.PI;
+            if (Math.abs(angle) > 8) {
+                message = angle > 0 ? "INCLINE PARA A DIREITA ↗" : "INCLINE PARA A ESQUERDA ↖";
+                isAligned = false;
+                feedbackType = "error";
+            }
+            
+            // Atualiza feedback visual
+            elements.status.textContent = message;
+            elements.status.className = "status " + feedbackType;
+            
+            // Atualiza guia facial
+            const faceGuide = document.querySelector('.face-guide');
+            if (isAligned) {
+                faceGuide.classList.add('active');
+                state.alignmentCount++;
+                
+                // Aumenta progresso quando alinhado
+                if (state.progress < 100) {
+                    const progressIncrement = config.scanSpeed * (1 + state.alignmentCount / 50);
+                    state.progress = Math.min(100, state.progress + progressIncrement);
+                    elements.progressBar.style.width = state.progress + '%';
+                    
+                    // Atualiza mensagem durante o scan
+                    if (state.progress < 100) {
+                        elements.status.textContent = `ANALISANDO... ${Math.floor(state.progress)}%`;
+                        elements.status.className = "status scanning";
+                    }
+                }
+            } else {
+                faceGuide.classList.remove('active');
+                state.alignmentCount = 0;
+                
+                // Reduz progresso se desalinhado
+                state.progress = Math.max(0, state.progress - config.scanPenalty);
+                elements.progressBar.style.width = state.progress + '%';
+            }
+            
+            // Atualiza cor da barra de progresso
+            updateProgressBarColor();
+            
+            return { 
+                isAligned, 
+                message,
+                feedback: { offsetX, offsetY } // Garante que o feedback sempre terá esses valores
+            };
+        }
+
+        // Calcula a distância entre dois pontos
+        function distanceBetween(pointA, pointB) {
+            return Math.sqrt(Math.pow(pointB.x - pointA.x, 2) + Math.pow(pointB.y - pointA.y, 2));
+        }   
+
+        // Atualiza a cor da barra de progresso
+        function updateProgressBarColor() {
+            const progress = state.progress;
+            let color;
+            
+            if (progress < 30) {
+                color = `linear-gradient(90deg, #ff5e5e ${progress}%, #ff1e1e 100%)`;
+            } else if (progress < 70) {
+                color = `linear-gradient(90deg, #ffbb00 ${progress}%, #ff9500 100%)`;
+            } else {
+                color = `linear-gradient(90deg, #00D1FF 0%, #00ff88 ${progress}%)`;
+            }
+            
+            elements.progressBar.style.background = color;
+        }
+
+        // Desenha as guias de alinhamento
+        function drawAlignmentGuides(ctx, feedback) {
+            const { offsetX, offsetY } = feedback;
+            const canvasCenterX = elements.canvas.width / 2;
+            const canvasCenterY = elements.canvas.height / 2;
+
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+            ctx.lineWidth = 2;
+
+            // Desenha linhas de alinhamento
+            ctx.beginPath();
+            ctx.moveTo(canvasCenterX, canvasCenterY);
+            ctx.lineTo(canvasCenterX + offsetX, canvasCenterY + offsetY);
+            ctx.stroke();
+
+            // Desenha círculo de alinhamento
+            ctx.beginPath();
+            ctx.arc(canvasCenterX + offsetX, canvasCenterY + offsetY, 20, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // Desenha os traços do rosto
+        function drawFaceLines(landmarks, ctx, isActive = false) {
+            const style = config.lineStyle;
+
+            ctx.strokeStyle = isActive ? style.active : style.static;
+            ctx.lineWidth = style.width;
+            ctx.globalCompositeOperation = 'lighter';
+
+            ctx.beginPath();
+            config.connections.forEach(([startIdx, endIdx]) => {
+                const start = landmarks[0][startIdx];
+                const end = landmarks[0][endIdx];
+                if (start && end) {
+                    ctx.moveTo(start.x * elements.canvas.width, start.y * elements.canvas.height);
+                    ctx.lineTo(end.x * elements.canvas.width, end.y * elements.canvas.height);
+                }
+            });
+            ctx.stroke();
+
+            ctx.fillStyle = style.active;
+            landmarks[0].forEach((point, i) => {
+                if (i % 5 === 0) {
+                    ctx.beginPath();
+                    ctx.arc(
+                        point.x * elements.canvas.width,
+                        point.y * elements.canvas.height,
+                        style.pointSize, 0, Math.PI * 2
+                    );
+                    ctx.fill();
+                }
+            });
+        }
+
+        // Atualiza a análise facial
+        function updateFaceAnalysis(landmarks) {
+            if (!landmarks) return;
+
+            const measurements = getFacialMeasurements(landmarks);
+            state.measurementBuffer.push(measurements);
+            if (state.measurementBuffer.length > state.bufferSize) {
+                state.measurementBuffer.shift();
+            }
+
+            const averagedMeasurements = averageMeasurements(state.measurementBuffer);
+
+            document.getElementById('forehead-width').textContent = averagedMeasurements.foreheadWidth.toFixed(1) + " cm";
+            document.getElementById('cheek-width').textContent = averagedMeasurements.cheekWidth.toFixed(1) + " cm";
+            document.getElementById('jaw-width').textContent = averagedMeasurements.jawWidth.toFixed(1) + " cm";
+            document.getElementById('face-height').textContent = averagedMeasurements.faceHeight.toFixed(1) + " cm";
+            document.getElementById('face-ratio').textContent = averagedMeasurements.faceRatio.toFixed(2);
+
+            const faceShape = determineFaceShape(averagedMeasurements);
+            state.faceShape = faceShape;
+            document.getElementById('face-shape-text').textContent = faceShape;
+            document.getElementById('face-shape-loading').style.display = 'none';
+
+            generateRecommendations(faceShape, averagedMeasurements);
+        }
+
+        // Calcula a média das medições
+        function averageMeasurements(buffer) {
+            if (buffer.length === 0) return {};
+            const keys = Object.keys(buffer[0]);
+            const sum = buffer.reduce((acc, curr) => {
+                keys.forEach(key => {
+                    acc[key] = (acc[key] || 0) + curr[key];
+                });
+                return acc;
+            }, {});
+            return keys.reduce((acc, key) => {
+                acc[key] = sum[key] / buffer.length;
+                return acc;
+            }, {});
+        }
+
+        // Obtém as medidas faciais
+        function getFacialMeasurements(landmarks) {
+            const foreheadPointsLeft = [234, 227];
+            const foreheadPointsRight = [454, 447];
+            const cheekPointsLeft = [205, 203];
+            const cheekPointsRight = [425, 423];
+            const jawPointsLeft = [172, 136];
+            const jawPointsRight = [397, 361];
+            const chin = landmarks[152];
+            const hairline = landmarks[10];
+            const leftEye = landmarks[33];
+            const rightEye = landmarks[263];
+
+            const canvasWidth = elements.canvas.width;
+            const canvasHeight = elements.canvas.height;
+            const pupilDistance = distanceBetween(leftEye, rightEye) * canvasWidth;
+            const referenceDistance = 6.3; // Distância média entre pupilas em cm
+            const scaleFactor = referenceDistance / pupilDistance;
+
+            const toCm = (distance) => distance * canvasWidth * scaleFactor;
+
+            const foreheadWidth = averageDistance(foreheadPointsLeft, foreheadPointsRight, landmarks);
+            const cheekWidth = averageDistance(cheekPointsLeft, cheekPointsRight, landmarks);
+            const jawWidth = averageDistance(jawPointsLeft, jawPointsRight, landmarks);
+            const faceHeight = toCm(distanceBetween(hairline, chin)) * (canvasHeight / canvasWidth);
+
+            const foreheadToCheekRatio = foreheadWidth / cheekWidth;
+            const jawToCheekRatio = jawWidth / cheekWidth;
+            const faceRatio = faceHeight / cheekWidth;
+
+            return {
+                foreheadWidth: Math.min(foreheadWidth, 20),
+                cheekWidth: Math.min(cheekWidth, 20),
+                jawWidth: Math.min(jawWidth, 20),
+                faceHeight: Math.min(faceHeight, 30),
+                faceRatio,
+                foreheadToCheekRatio,
+                jawToCheekRatio
+            };
+        }
+
+        // Calcula a distância média entre pontos
+        function averageDistance(leftIndices, rightIndices, landmarks) {
+            const distances = [];
+            leftIndices.forEach(leftIdx => {
+                rightIndices.forEach(rightIdx => {
+                    const dist = distanceBetween(landmarks[leftIdx], landmarks[rightIdx]);
+                    if (dist > 0) distances.push(dist);
+                });
+            });
+            const avgDist = distances.length > 0 ? distances.reduce((a, b) => a + b, 0) / distances.length : 0;
+            return avgDist * elements.canvas.width * (6.3 / (distanceBetween(landmarks[33], landmarks[263]) * elements.canvas.width));
+        }
+
+        // Determina o formato do rosto (versão aprimorada com Hallawell)
+        function determineFaceShape(measurements) {
+            const { foreheadWidth, cheekWidth, jawWidth, faceHeight } = measurements;
+            
+            const proporcoes = {
+                larguraMedia: (foreheadWidth + cheekWidth + jawWidth) / 3,
+                relacaoAlturaLargura: faceHeight / ((foreheadWidth + cheekWidth + jawWidth) / 3)
+            };
+
+            if (proporcoes.relacaoAlturaLargura > 1.5) {
+                return jawWidth < cheekWidth ? "Retangular" : "Oblongo";
+            }
+            if (Math.abs(cheekWidth - jawWidth) < 0.04) {
+                if (Math.abs(cheekWidth - foreheadWidth) < 0.04) {
+                    return proporcoes.relacaoAlturaLargura > 1.1 ? "Quadrado" : "Redondo";
+                }
+                return foreheadWidth > cheekWidth ? "Triângulo Invertido" : "Triângulo";
+            }
+            return cheekWidth > foreheadWidth && cheekWidth > jawWidth 
+                ? "Diamante" : "Oval";
+        }
+
+        // Gera recomendações personalizadas
+        function generateRecommendations(faceShape, measurements) {
+            let hairstyleSuggestion = "";
+            let avoidSuggestion = "";
+            let productSuggestion = "";
+            let productLink = "#";
+            let hairstyleLink = `haircuts.html?shape=${faceShape}`;
+
+            const sugestoes = {
+                Oval: {
+                    corte: "Pixie Cut • Wolf Cut • Butterfly Cut • Long Bob",
+                    evitar: "Franjas muito pesadas que cobrem a testa",
+                    produto: "Cera modeladora para textura",
+                    link: "https://mercadolivre.com.br/cera-modeladora-textura",
+                    descricao: "O rosto oval é considerado o formato ideal, com proporções equilibradas e testa ligeiramente mais larga que o queixo. É versátil e se adapta a quase todos os estilos."
+                },
+                Redondo: {
+                    corte: "Side Cut • Nirvana Cut • Pixie assimétrico • Shaggy Hair",
+                    evitar: "Cortes arredondados sem volume no topo",
+                    produto: "Spray de volume raiz",
+                    link: "https://mercadolivre.com.br/spray-volume-raiz",
+                    descricao: "O rosto redondo possui altura e largura similares, com linhas suaves e sem ângulos definidos. O objetivo é criar altura e ângulos para alongar visualmente."
+                },
+                Quadrado: {
+                    corte: "Shaggy Hair • Octopus Cut • Wolf Cut com franja",
+                    evitar: "Blunt Cut reto na altura da mandíbula",
+                    produto: "Pomada para definição de cachos",
+                    link: "https://mercadolivre.com.br/pomada-definicao-cachos",
+                    descricao: "O rosto quadrado apresenta testa e mandíbula com larguras similares e ângulos marcados. A estratégia é suavizar a mandíbula com texturas e camadas."
+                },
+                Retangular: {
+                    corte: "Short Bob • Kitty Cut • Blunt Cut com franja",
+                    evitar: "Long Bob sem camadas ou volume lateral",
+                    produto: "Óleo de argan para finalização",
+                    link: "https://mercadolivre.com.br/oleo-argan-capilar",
+                    descricao: "O rosto retangular é mais longo do que largo, com testa e mandíbula alinhadas. O objetivo é encurtar visualmente o rosto com franjas e volume lateral."
+                },
+                Oblongo: {
+                    corte: "Blunt Cut • Kitty Cut • Short Bob com franja",
+                    evitar: "Cortes muito longos sem camadas",
+                    produto: "Creme de pentear para peso controlado",
+                    link: "https://mercadolivre.com.br/creme-pentear-leve",
+                    descricao: "O rosto oblongo é similar ao retangular, sendo mais longo do que largo, mas com ângulos mais suaves e menos definidos. A ideia é criar linhas horizontais para quebrar a altura."
+                },
+                "Triângulo Invertido": {
+                    corte: "Pixie Cut texturizado • Side Cut • Bob angulado",
+                    evitar: "Topetes altos ou volume excessivo no topo",
+                    produto: "Gel de fixação média",
+                    link: "https://mercadolivre.com.br/gel-fixacao-media",
+                    descricao: "O rosto triângulo invertido (ou coração) possui testa larga e queixo estreito. A estratégia é equilibrar a testa larga com volume na parte inferior do rosto."
+                },
+                Diamante: {
+                    corte: "Wolf Cut • Shaggy Hair • Butterfly Cut com franja",
+                    evitar: "Cortes muito simétricos ou lisos",
+                    produto: "Mousse de volume",
+                    link: "https://mercadolivre.com.br/mousse-volume",
+                    descricao: "O rosto diamante tem maçãs do rosto mais largas, testa e queixo mais estreitos. O objetivo é suavizar os ângulos com texturas e movimento."
+                },
+                Triângulo: {
+                    corte: "Long Bob • Shaggy Hair • Cortes com volume nas laterais",
+                    evitar: "Cortes que adicionam volume no topo",
+                    produto: "Spray texturizador",
+                    link: "https://mercadolivre.com.br/spray-texturizador",
+                    descricao: "O rosto triângulo (ou pera) possui mandíbula mais larga e testa mais estreita. A estratégia é adicionar volume na parte superior para equilibrar as proporções."
+                },
+                Indefinido: {
+                    corte: "Todos os cortes podem ser avaliados em consulta",
+                    evitar: "Nenhuma restrição identificada",
+                    produto: "Kit básico de cuidados",
+                    link: "https://mercadolivre.com.br/kit-cuidados-capilares",
+                    descricao: "Não foi possível determinar um formato de rosto específico. Recomenda-se uma consulta com um profissional para uma análise mais detalhada."
+                }
+            };
+
+            const currentSuggestion = sugestoes[faceShape] || sugestoes.Indefinido;
+
+            // Atualiza a interface
+            document.getElementById('hairstyle-suggestion').textContent = currentSuggestion.corte;
+            document.getElementById('avoid-suggestion').textContent = currentSuggestion.evitar;
+            document.getElementById('hairstyle-link').href = hairstyleLink;
+            document.getElementById('product-suggestion').textContent = currentSuggestion.produto;
+            document.getElementById('product-link').href = currentSuggestion.link;
+            document.getElementById('face-shape-description-result').textContent = currentSuggestion.descricao; // Adiciona a descrição aqui
+        }
+
+        // Completa o scan e mostra resultados
+        function completeScan() {
+            state.scanning = false;
+
+            // Para a câmera
+            if (elements.video.srcObject) {
+                elements.video.srcObject.getTracks().forEach(track => track.stop());
+            }
+
+            // Salva a imagem estática
+            elements.staticCtx.clearRect(0, 0, elements.staticCanvas.width, elements.staticCanvas.height);
+            elements.staticCtx.drawImage(elements.canvas, 0, 0, elements.staticCanvas.width, elements.staticCanvas.height);
+
+            if (state.lastLandmarks) {
+                drawFaceLines([state.lastLandmarks], elements.staticCtx, false);
+            }
+
+            // Atualiza a interface
+            elements.video.style.display = 'none';
+            elements.canvas.style.display = 'none';
+            elements.scanLine.style.display = 'none';
+            elements.faceGuide.style.display = 'none';
+            elements.progressContainer.style.display = 'none';
+
+            elements.staticCanvas.style.display = 'block';
+            elements.status.textContent = "DIAGNÓSTICO COMPLETO!";
+            elements.status.className = "status success";
+            elements.progressBar.style.background = "var(--gold)";
+
+            // Mostra o resultado
+            elements.resultContainer.style.display = 'flex';
+            setTimeout(() => {
+                elements.resultContainer.classList.add('active');
+                gsap.from("#retryButton", {
+                    duration: 0.5,
+                    y: 20,
+                    opacity: 0,
+                    ease: "power3.out",
+                    delay: 0.5
+                });
+                gsap.from("#exploreCutsButton", {
+                    duration: 0.5,
+                    y: 20,
+                    opacity: 0,
+                    ease: "power3.out",
+                    delay: 0.7
+                });
+            }, 100);
+
+            // Atualiza a análise final
+            if (state.lastLandmarks) {
+                updateFaceAnalysis(state.lastLandmarks);
+            }
+
+            // Captura a imagem do resultado
+            // Garante que html2canvas esteja carregado antes de usar
+            if (typeof html2canvas !== 'undefined') {
+                captureResultImage();
+            } else {
+                console.warn('html2canvas não está carregado. A imagem do resultado não será capturada.');
+            }
+            setupShareButtons();
+        }
+
+        // Captura a imagem do resultado para compartilhamento
+        function captureResultImage() {
+            html2canvas(document.getElementById('scannerContainer'), {
+                backgroundColor: null,
+                scale: 1,
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                state.currentResultImage = canvas.toDataURL('image/png');
+            });
+        }
+
+        // Configura os botões de compartilhamento
+        function setupShareButtons() {
+            if (!setupShareButtons.initialized) {
+                document.getElementById('share-whatsapp').addEventListener('click', () => {
+                    const text = "Confira meu diagnóstico facial completo feito com a tecnologia Hair by Marcio!";
+                    const url = encodeURIComponent(window.location.href);
+                    window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+                });
+
+                document.getElementById('share-instagram').addEventListener('click', () => {
+                    alert("Para compartilhar no Instagram, salve a imagem e poste diretamente no app!");
+                });
+
+                document.getElementById('share-facebook').addEventListener('click', () => {
+                    const url = encodeURIComponent(window.location.href);
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+                });
+
+                document.getElementById('copy-link').addEventListener('click', () => {
+                    navigator.clipboard.writeText(window.location.href).then(() => {
+                        alert("Link copiado para a área de transferência!");
+                    });
+                });
+
+                setupShareButtons.initialized = true;
+            }
+        }
+    </script>
+</body>
+</html>

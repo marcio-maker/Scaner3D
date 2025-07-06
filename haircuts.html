@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair by Márcio | Cortes Recomendados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00D1FF;
+            --secondary: #9C27B0;
+            --dark: #12141D;
+            --darker: #0A0B10;
+            --light: #F0F4FF;
+            --gold: #FFD700;
+            --tech-gradient: linear-gradient(135deg, #00D1FF 0%, #9C27B0 100%);
+            --card-bg: rgba(18, 20, 29, 0.8);
+            --neon-shadow: 0 0 15px rgba(0, 209, 255, 0.5);
+            --font-main: 'Montserrat', sans-serif;
+            --font-tech: 'Orbitron', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(10, 11, 16, 0.9);
+            padding: 2rem 0;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 209, 255, 0.1);
+        }
+
+        header h1 {
+            font-family: var(--font-tech);
+            font-size: 2.5rem;
+            background: var(--tech-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: var(--primary);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--primary);
+            border-radius: 50px;
+            transition: all 0.3s;
+            background: rgba(0, 209, 255, 0.1);
+        }
+
+        .back-button:hover {
+            background: rgba(0, 209, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .face-shape-info {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(0, 209, 255, 0.1);
+            text-align: center;
+        }
+
+        .face-shape-title {
+            font-family: var(--font-tech);
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .cuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .cut-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 209, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .cut-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--neon-shadow);
+            border-color: rgba(0, 209, 255, 0.3);
+        }
+
+        .cut-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cut-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.1) 100%
+            );
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .cut-content {
+            padding: 1.5rem;
+        }
+
+        .cut-name {
+            font-family: var(--font-tech);
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .cut-description {
+            color: var(--light);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .cut-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .cut-features li {
+            color: var(--light);
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .cut-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .maintenance-level {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .maintenance-low {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00FF88;
+            border: 1px solid #00FF88;
+        }
+
+        .maintenance-medium {
+            background: rgba(255, 187, 0, 0.2);
+            color: #FFBB00;
+            border: 1px solid #FFBB00;
+        }
+
+        .maintenance-high {
+            background: rgba(255, 77, 77, 0.2);
+            color: #FF4D4D;
+            border: 1px solid #FF4D4D;
+        }
+
+        .book-button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--tech-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-family: var(--font-tech);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .book-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 209, 255, 0.5);
+        }
+
+        .tips-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 209, 255, 0.1);
+        }
+
+        .tips-title {
+            font-family: var(--font-tech);
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tip-item {
+            padding: 1rem;
+            background: rgba(0, 209, 255, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid var(--gold);
+        }
+
+        .tip-item h4 {
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .cuts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CORTES RECOMENDADOS</h1>
+        <p>Baseado no seu formato facial</p>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Voltar ao Diagnóstico
+        </a>
+
+        <div class="face-shape-info">
+            <div class="face-shape-title" id="face-shape-display">FORMATO DETECTADO</div>
+            <p id="face-shape-description">Carregando informações...</p>
+            <button class="book-button" style="margin-top: 1rem;" onclick="bookAppointment(document.getElementById('face-shape-display').textContent, true)">
+                Agendar este corte <i class="fas fa-calendar-check"></i>
+            </button>
+        </div>
+
+        <div class="cuts-grid" id="cuts-container">
+            <!-- Cortes serão carregados dinamicamente -->
+        </div>
+
+        <div class="tips-section">
+            <h3 class="tips-title">DICAS DE MANUTENÇÃO</h3>
+            <div class="tips-grid" id="tips-container">
+                <!-- Dicas serão carregadas dinamicamente -->
+            </div>
+            <button class="book-button" style="margin-top: 2rem;" onclick="window.location.href='index_tips.html'">Ver Mais Dicas</button>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos cortes por formato facial
+        const cutsDatabase = {
+            Oval: {
+                description: "Formato equilibrado e versátil - quase todos os estilos funcionam bem!",
+                cuts: [
+                    {
+                        name: "Pixie Cut",
+                        description: "Corte super curto e moderno, ideal para destacar os traços faciais.",
+                        features: ["Baixa manutenção diária", "Destaca os olhos", "Visual ousado e contemporâneo"],
+                        maintenance: "medium",
+                        icon: "✂️"
+                    },
+                    {
+                        name: "Wolf Cut",
+                        description: "Camadas desestruturadas com muito movimento e personalidade.",
+                        features: ["Textura natural", "Volume controlado", "Estilo despojado"],
+                        maintenance: "high",
+                        icon: "🐺"
+                    },
+                    {
+                        name: "Butterfly Cut",
+                        description: "Camadas que criam movimento suave como asas de borboleta.",
+                        features: ["Movimento natural", "Versatilidade de styling", "Feminino e delicado"],
+                        maintenance: "medium",
+                        icon: "🦋"
+                    },
+                    {
+                        name: "Long Bob",
+                        description: "Comprimento médio clássico e elegante.",
+                        features: ["Versatilidade profissional", "Fácil de estilizar", "Atemporal"],
+                        maintenance: "low",
+                        icon: "💇‍♀️"
+                    }
+                ],
+                tips: [
+                    { title: "Versatilidade", text: "Experimente diferentes texturas e comprimentos" },
+                    { title: "Manutenção", text: "Corte a cada 6-8 semanas para manter a forma" },
+                    { title: "Styling", text: "Use produtos leves para não pesar o cabelo" }
+                ]
+            },
+            Redondo: {
+                description: "Estratégia: criar altura e ângulos para alongar visualmente o rosto.",
+                cuts: [
+                    {
+                        name: "Side Cut",
+                        description: "Assimetria que cria ângulos e alonga o rosto.",
+                        features: ["Cria ângulos", "Visual moderno", "Alonga o rosto"],
+                        maintenance: "high",
+                        icon: "⚡"
+                    },
+                    {
+                        name: "Nirvana Cut",
+                        description: "Inspirado no grunge, com camadas desconectadas.",
+                        features: ["Textura rebelde", "Volume no topo", "Estilo alternativo"],
+                        maintenance: "medium",
+                        icon: "🎸"
+                    },
+                    {
+                        name: "Pixie Assimétrico",
+                        description: "Pixie com corte irregular para quebrar a simetria.",
+                        features: ["Quebra a simetria", "Ousado", "Fácil manutenção"],
+                        maintenance: "medium",
+                        icon: "✨"
+                    },
+                    {
+                        name: "Shaggy Hair",
+                        description: "Camadas texturizadas com volume no topo.",
+                        features: ["Volume estratégico", "Textura natural", "Movimento"],
+                        maintenance: "high",
+                        icon: "🌊"
+                    }
+                ],
+                tips: [
+                    { title: "Volume", text: "Concentre volume no topo, evite nas laterais" },
+                    { title: "Franja", text: "Prefira franjas laterais ou assimétricas" },
+                    { title: "Comprimento", text: "Evite cortes na altura do queixo" }
+                ]
+            },
+            Quadrado: {
+                description: "Estratégia: suavizar os ângulos da mandíbula com texturas e camadas.",
+                cuts: [
+                    {
+                        name: "Shaggy Hair",
+                        description: "Camadas suaves que quebram a rigidez dos ângulos.",
+                        features: ["Suaviza ângulos", "Textura natural", "Movimento fluido"],
+                        maintenance: "high",
+                        icon: "🌊"
+                    },
+                    {
+                        name: "Octopus Cut",
+                        description: "Camadas em diferentes comprimentos como tentáculos.",
+                        features: ["Movimento dinâmico", "Textura única", "Visual criativo"],
+                        maintenance: "high",
+                        icon: "🐙"
+                    },
+                    {
+                        name: "Wolf Cut com Franja",
+                        description: "Wolf cut com franja lateral para suavizar a testa.",
+                        features: ["Franja suavizante", "Textura rebelde", "Equilibra proporções"],
+                        maintenance: "high",
+                        icon: "🐺"
+                    }
+                ],
+                tips: [
+                    { title: "Suavização", text: "Use texturas para quebrar linhas retas" },
+                    { title: "Evitar", text: "Cortes muito geométricos ou retos" },
+                    { title: "Franja", text: "Franjas laterais ajudam a suavizar" }
+                ]
+            },
+            Retangular: {
+                description: "Estratégia: encurtar visualmente o rosto com franjas e volume lateral.",
+                cuts: [
+                    {
+                        name: "Short Bob",
+                        description: "Bob curto que quebra o comprimento do rosto.",
+                        features: ["Encurta visualmente", "Clássico", "Profissional"],
+                        maintenance: "medium",
+                        icon: "💇‍♀️"
+                    },
+                    {
+                        name: "Kitty Cut",
+                        description: "Corte fofo com camadas suaves e arredondadas.",
+                        features: ["Visual jovem", "Camadas suaves", "Feminino"],
+                        maintenance: "medium",
+                        icon: "🐱"
+                    },
+                    {
+                        name: "Blunt Cut com Franja",
+                        description: "Corte reto com franja para quebrar a altura.",
+                        features: ["Franja estratégica", "Linha limpa", "Encurta o rosto"],
+                        maintenance: "low",
+                        icon: "✂️"
+                    }
+                ],
+                tips: [
+                    { title: "Franja", text: "Sempre use franja para quebrar a altura" },
+                    { title: "Volume", text: "Crie volume nas laterais, não no topo" },
+                    { title: "Comprimento", text: "Evite cabelos muito longos" }
+                ]
+            },
+            Oblongo: {
+                description: "Similar ao retangular, mas com ângulos mais suaves.",
+                cuts: [
+                    {
+                        name: "Blunt Cut",
+                        description: "Corte reto que cria uma linha horizontal forte.",
+                        features: ["Linha horizontal", "Encurta o rosto", "Moderno"],
+                        maintenance: "low",
+                        icon: "✂️"
+                    },
+                    {
+                        name: "Kitty Cut",
+                        description: "Camadas arredondadas e suaves.",
+                        features: ["Suavidade", "Feminino", "Jovial"],
+                        maintenance: "medium",
+                        icon: "🐱"
+                    },
+                    {
+                        name: "Short Bob com Franja",
+                        description: "Bob com franja cheia para quebrar a altura.",
+                        features: ["Franja cheia", "Proporção equilibrada", "Clássico"],
+                        maintenance: "medium",
+                        icon: "💇‍♀️"
+                    }
+                ],
+                tips: [
+                    { title: "Horizontalidade", text: "Crie linhas horizontais para quebrar a altura" },
+                    { title: "Peso", text: "Use produtos que deem peso ao cabelo" },
+                    { title: "Evitar", text: "Topetes ou volume excessivo no topo" }
+                ]
+            },
+            "Triângulo Invertido": {
+                description: "Estratégia: equilibrar a testa larga com volume na parte inferior.",
+                cuts: [
+                    {
+                        name: "Pixie Cut Texturizado",
+                        description: "Pixie com textura para não adicionar volume no topo.",
+                        features: ["Textura controlada", "Não adiciona volume no topo", "Moderno"],
+                        maintenance: "medium",
+                        icon: "✨"
+                    },
+                    {
+                        name: "Side Cut",
+                        description: "Assimetria que quebra a largura da testa.",
+                        features: ["Quebra simetria", "Visual ousado", "Equilibra proporções"],
+                        maintenance: "high",
+                        icon: "⚡"
+                    },
+                    {
+                        name: "Bob Angulado",
+                        description: "Bob com ângulo que adiciona volume embaixo.",
+                        features: ["Volume na base", "Ângulo estratégico", "Equilibra testa"],
+                        maintenance: "medium",
+                        icon: "📐"
+                    }
+                ],
+                tips: [
+                    { title: "Volume", text: "Concentre volume na parte inferior" },
+                    { title: "Evitar", text: "Topetes ou volume excessivo no topo" },
+                    { title: "Equilíbrio", text: "Busque equilibrar a largura da testa" }
+                ]
+            },
+            Diamante: {
+                description: "Estratégia: suavizar os ângulos com texturas e movimento.",
+                cuts: [
+                    {
+                        name: "Wolf Cut",
+                        description: "Camadas desestruturadas que suavizam os ângulos.",
+                        features: ["Suaviza ângulos", "Movimento natural", "Textura rebelde"],
+                        maintenance: "high",
+                        icon: "🐺"
+                    },
+                    {
+                        name: "Shaggy Hair",
+                        description: "Textura que quebra a geometria do rosto.",
+                        features: ["Quebra geometria", "Movimento fluido", "Natural"],
+                        maintenance: "high",
+                        icon: "🌊"
+                    },
+                    {
+                        name: "Butterfly Cut com Franja",
+                        description: "Movimento suave com franja para suavizar a testa.",
+                        features: ["Movimento suave", "Franja estratégica", "Feminino"],
+                        maintenance: "medium",
+                        icon: "🦋"
+                    }
+                ],
+                tips: [
+                    { title: "Suavização", text: "Use texturas para quebrar ângulos" },
+                    { title: "Movimento", text: "Priorize cortes com muito movimento" },
+                    { title: "Evitar", text: "Cortes muito geométricos ou simétricos" }
+                ]
+            }
+        };
+
+        // Função para obter parâmetros da URL
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Função para agendar consulta
+        function bookAppointment(name, isShape = false) {
+            const message = isShape
+                ? `Olá! Gostaria de agendar uma consulta para um corte adequado ao formato facial ${name}. Vi a recomendação no diagnóstico facial do Hair by Marcio.`
+                : `Olá! Gostaria de agendar uma consulta para o corte: ${name}. Vi a recomendação no diagnóstico facial do Hair by Marcio.`;
+            const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Função para carregar cortes baseados no formato
+        function loadCutsForShape(shape) {
+            const data = cutsDatabase[shape] || cutsDatabase['Oval'];
+            
+            // Atualiza informações do formato
+            document.getElementById('face-shape-display').textContent = shape || 'OVAL';
+            document.getElementById('face-shape-description').textContent = data.description;
+
+            // Carrega cortes
+            const cutsContainer = document.getElementById('cuts-container');
+            cutsContainer.innerHTML = '';
+
+            data.cuts.forEach(cut => {
+                const cutCard = document.createElement('div');
+                cutCard.className = 'cut-card';
+                
+                const maintenanceClass = `maintenance-${cut.maintenance}`;
+                const maintenanceText = {
+                    low: 'Baixa Manutenção',
+                    medium: 'Manutenção Média',
+                    high: 'Alta Manutenção'
+                }[cut.maintenance];
+
+                cutCard.innerHTML = `
+                    <div class="cut-image">
+                        <span style="font-size: 4rem;">${cut.icon}</span>
+                    </div>
+                    <div class="cut-content">
+                        <h3 class="cut-name">${cut.name}</h3>
+                        <div class="maintenance-level ${maintenanceClass}">${maintenanceText}</div>
+                        <p class="cut-description">${cut.description}</p>
+                        <ul class="cut-features">
+                            ${cut.features.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                        <button class="book-button" onclick="bookAppointment('${cut.name}')">
+                            Agendar este corte
+                        </button>
+                    </div>
+                `;
+                
+                cutsContainer.appendChild(cutCard);
+            });
+
+            // Carrega dicas
+            const tipsContainer = document.getElementById('tips-container');
+            tipsContainer.innerHTML = '';
+
+            data.tips.forEach(tip => {
+                const tipItem = document.createElement('div');
+                tipItem.className = 'tip-item';
+                tipItem.innerHTML = `
+                    <h4>${tip.title}</h4>
+                    <p>${tip.text}</p>
+                `;
+                tipsContainer.appendChild(tipItem);
+            });
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            const faceShape = getUrlParameter('shape') || 'Oval';
+            loadCutsForShape(faceShape);
+        });
+    </script>
+</body>
+</html>

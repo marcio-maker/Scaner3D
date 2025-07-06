@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair by Márcio | Produtos Recomendados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00D1FF;
+            --primary-light: rgba(0, 209, 255, 0.2);
+            --secondary: #9C27B0;
+            --dark: #12141D;
+            --darker: #0A0B10;
+            --light: #F0F4FF;
+            --gold: #FFD700;
+            --error: #FF4D4D;
+            --success: #00FF88;
+            --tech-gradient: linear-gradient(135deg, #00D1FF 0%, #9C27B0 100%);
+            --card-bg: rgba(18, 20, 29, 0.8);
+            --neon-shadow: 0 0 15px rgba(0, 209, 255, 0.5);
+            --font-main: 'Montserrat', sans-serif;
+            --font-tech: 'Orbitron', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--darker);
+        }
+
+        header {
+            background: rgba(10, 11, 16, 0.9);
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 209, 255, 0.1);
+        }
+
+        header h1 {
+            font-family: var(--font-tech);
+            font-size: 2.2rem;
+            background: var(--tech-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        header p {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--neon-shadow);
+            border: 1px solid rgba(0, 209, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 209, 255, 0.3);
+            border-color: rgba(0, 209, 255, 0.3);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 209, 255, 0.2);
+        }
+
+        .product-card h3 {
+            color: var(--gold);
+            font-family: var(--font-tech);
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card p {
+            font-size: 0.9rem;
+            color: var(--light);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .product-card .price {
+            font-family: var(--font-tech);
+            font-size: 1.5rem;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        .buy-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            font-family: var(--font-tech);
+            font-size: 1rem;
+            background: var(--tech-gradient);
+            color: var(--light);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: var(--neon-shadow);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .buy-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 209, 255, 0.7);
+        }
+
+        .buy-button i {
+            margin-left: 0.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: rgba(0, 209, 255, 0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: var(--font-tech);
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: var(--neon-shadow);
+        }
+
+        .back-button:hover {
+            background: rgba(0, 209, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 209, 255, 0.7);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <header>
+        <h1>HAIR BY MARCIO</h1>
+        <p>PRODUTOS RECOMENDADOS | TECNOLOGIA DE PONTA</p>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Voltar ao Diagnóstico</a>
+
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Cera+Modeladora" alt="Cera Modeladora">
+                <h3>Cera Modeladora para Textura</h3>
+                <p>Ideal para dar textura e fixação leve a média, perfeita para cortes como Pixie e Wolf Cut.</p>
+                <span class="price">R$ 49,90</span>
+                <a href="https://mercadolivre.com.br/cera-modeladora-textura" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Spray+Volume" alt="Spray de Volume">
+                <h3>Spray de Volume para Raiz</h3>
+                <p>Adiciona volume instantâneo na raiz, ótimo para rostos redondos e cortes Shaggy Hair.</p>
+                <span class="price">R$ 65,00</span>
+                <a href="https://mercadolivre.com.br/spray-volume-raiz" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Pomada+Cachos" alt="Pomada para Cachos">
+                <h3>Pomada para Definição de Cachos</h3>
+                <p>Define e controla cachos, ideal para cortes que valorizam a textura natural como o Octopus Cut.</p>
+                <span class="price">R$ 55,50</span>
+                <a href="https://mercadolivre.com.br/pomada-definicao-cachos" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Oleo+Argan" alt="Óleo de Argan">
+                <h3>Óleo de Argan para Finalização</h3>
+                <p>Proporciona brilho, maciez e reduz o frizz, excelente para finalizar cortes como o Blunt Cut.</p>
+                <span class="price">R$ 79,90</span>
+                <a href="https://mercadolivre.com.br/oleo-argan-capilar" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Creme+Pentear" alt="Creme de Pentear">
+                <h3>Creme de Pentear Leve</h3>
+                <p>Para peso controlado e hidratação, ideal para cabelos que precisam de caimento sem volume excessivo.</p>
+                <span class="price">R$ 45,00</span>
+                <a href="https://mercadolivre.com.br/creme-pentear-leve" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Gel+Fixacao" alt="Gel de Fixação">
+                <h3>Gel de Fixação Média</h3>
+                <p>Perfeito para modelar e manter o penteado, especialmente em cortes curtos e texturizados.</p>
+                <span class="price">R$ 38,00</span>
+                <a href="https://mercadolivre.com.br/gel-fixacao-media" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Mousse+Volume" alt="Mousse de Volume">
+                <h3>Mousse de Volume</h3>
+                <p>Cria volume e corpo aos fios, ideal para rostos diamante e cortes que precisam de mais plenitude.</p>
+                <span class="price">R$ 59,90</span>
+                <a href="https://mercadolivre.com.br/mousse-volume" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Spray+Texturizador" alt="Spray Texturizador">
+                <h3>Spray Texturizador</h3>
+                <p>Para um acabamento despojado e com textura, ótimo para cortes Shaggy Hair e Wolf Cut.</p>
+                <span class="price">R$ 52,00</span>
+                <a href="https://mercadolivre.com.br/spray-texturizador" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+
+            <div class="product-card">
+                <img src="https://via.placeholder.com/300x200?text=Kit+Cuidados" alt="Kit Cuidados Capilares">
+                <h3>Kit Básico de Cuidados Capilares</h3>
+                <p>Shampoo, condicionador e máscara para uma rotina completa de cuidados com os fios.</p>
+                <span class="price">R$ 120,00</span>
+                <a href="https://mercadolivre.com.br/kit-cuidados-capilares" target="_blank" class="buy-button">Comprar no Mercado Livre <i class="fas fa-external-link-alt"></i></a>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-button" style="margin-top: 3rem;"><i class="fas fa-arrow-left"></i> Voltar ao Diagnóstico</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#00D1FF"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#00D1FF",
+                    "opacity": 0.2,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 0.5
+                        }
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+</body>
+</html>
+
+
