@@ -6,6 +6,7 @@
     <title>Hair by Márcio | Cortes Recomendados</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --primary: #00D1FF;
@@ -37,28 +38,23 @@
 
         header {
             background: rgba(10, 11, 16, 0.9);
-            padding: 2rem 0;
-            text-align: center;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(0, 209, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        header h1 {
+        .logo {
             font-family: var(--font-tech);
-            font-size: 2.5rem;
             background: var(--tech-gradient);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-            letter-spacing: 2px;
         }
 
-        header p {
-            color: var(--primary);
-            font-size: 1.1rem;
-            letter-spacing: 1px;
+        #mobile-menu {
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -129,14 +125,18 @@
         .cut-image {
             width: 100%;
             height: 250px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: white;
+            object-fit: cover;
+            display: block;
             position: relative;
             overflow: hidden;
+        }
+
+        .cut-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
         }
 
         .cut-image::before {
@@ -280,11 +280,14 @@
             font-weight: 600;
         }
 
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
+        footer {
+            background: rgba(10, 11, 16, 0.9);
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(0, 209, 255, 0.1);
+        }
 
+        @media (max-width: 768px) {
             .container {
                 padding: 1rem;
             }
@@ -292,13 +295,41 @@
             .cuts-grid {
                 grid-template-columns: 1fr;
             }
+
+            .cut-image {
+                height: 200px;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>CORTES RECOMENDADOS</h1>
-        <p>Baseado no seu formato facial</p>
+    <!-- Header -->
+    <header class="bg-gray-800 text-white sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold logo">HAIR BY MARCIO</h1>
+            <nav class="hidden md:flex space-x-4">
+                <a href="index.html" class="hover:text-primary-300 font-semibold">Início</a>
+                <a href="haircuts.html" class="hover:text-primary-300">Cortes</a>
+                <a href="hair_colors.html" class="hover:text-primary-300">Coloração</a>
+                <a href="products.html" class="hover:text-primary-300">Produtos</a>
+                <a href="tips.html" class="hover:text-primary-300">Premium</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <!-- Menu Mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-700">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 hover:text-primary-300">Início</a>
+                <a href="haircuts.html" class="block py-2 hover:text-primary-300">Cortes</a>
+                <a href="hair_colors.html" class="block py-2 hover:text-primary-300">Coloração</a>
+                <a href="products.html" class="block py-2 hover:text-primary-300">Produtos</a>
+                <a href="tips.html" class="block py-2 hover:text-primary-300">Premium</a>
+            </div>
+        </div>
     </header>
 
     <div class="container">
@@ -328,6 +359,19 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="hover:text-primary-300"><i class="fab fa-whatsapp fa-lg"></i></a>
+                <a href="#" class="hover:text-primary-300"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" class="hover:text-primary-300"><i class="fab fa-facebook fa-lg"></i></a>
+            </div>
+            <p class="mb-2">Hair by Marcio © 2025. Todos os direitos reservados.</p>
+            <p>Contato: <a href="mailto:contato@hairbymarcio.com" class="hover:text-primary-300">contato@hairbymarcio.com</a></p>
+        </div>
+    </footer>
+
     <script>
         // Dados dos cortes por formato facial
         const cutsDatabase = {
@@ -339,28 +383,28 @@
                         description: "Corte super curto e moderno, ideal para destacar os traços faciais.",
                         features: ["Baixa manutenção diária", "Destaca os olhos", "Visual ousado e contemporâneo"],
                         maintenance: "medium",
-                        icon: "✂️"
+                        image: "https://images.unsplash.com/photo-1610878180933-1234b8e36692?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Wolf Cut",
                         description: "Camadas desestruturadas com muito movimento e personalidade.",
                         features: ["Textura natural", "Volume controlado", "Estilo despojado"],
                         maintenance: "high",
-                        icon: "🐺"
+                        image: "https://images.unsplash.com/photo-1620119454739-1239b8e36692?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Butterfly Cut",
                         description: "Camadas que criam movimento suave como asas de borboleta.",
                         features: ["Movimento natural", "Versatilidade de styling", "Feminino e delicado"],
                         maintenance: "medium",
-                        icon: "🦋"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36693?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Long Bob",
                         description: "Comprimento médio clássico e elegante.",
                         features: ["Versatilidade profissional", "Fácil de estilizar", "Atemporal"],
                         maintenance: "low",
-                        icon: "💇‍♀️"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36694?w=300&h=300&fit=crop"
                     }
                 ],
                 tips: [
@@ -377,28 +421,28 @@
                         description: "Assimetria que cria ângulos e alonga o rosto.",
                         features: ["Cria ângulos", "Visual moderno", "Alonga o rosto"],
                         maintenance: "high",
-                        icon: "⚡"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36695?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Nirvana Cut",
                         description: "Inspirado no grunge, com camadas desconectadas.",
                         features: ["Textura rebelde", "Volume no topo", "Estilo alternativo"],
                         maintenance: "medium",
-                        icon: "🎸"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36696?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Pixie Assimétrico",
                         description: "Pixie com corte irregular para quebrar a simetria.",
                         features: ["Quebra a simetria", "Ousado", "Fácil manutenção"],
                         maintenance: "medium",
-                        icon: "✨"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36697?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Shaggy Hair",
                         description: "Camadas texturizadas com volume no topo.",
                         features: ["Volume estratégico", "Textura natural", "Movimento"],
                         maintenance: "high",
-                        icon: "🌊"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36698?w=300&h=300&fit=crop"
                     }
                 ],
                 tips: [
@@ -415,21 +459,21 @@
                         description: "Camadas suaves que quebram a rigidez dos ângulos.",
                         features: ["Suaviza ângulos", "Textura natural", "Movimento fluido"],
                         maintenance: "high",
-                        icon: "🌊"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36698?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Octopus Cut",
                         description: "Camadas em diferentes comprimentos como tentáculos.",
                         features: ["Movimento dinâmico", "Textura única", "Visual criativo"],
                         maintenance: "high",
-                        icon: "🐙"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36699?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Wolf Cut com Franja",
                         description: "Wolf cut com franja lateral para suavizar a testa.",
                         features: ["Franja suavizante", "Textura rebelde", "Equilibra proporções"],
                         maintenance: "high",
-                        icon: "🐺"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36700?w=300&h=300&fit=crop"
                     }
                 ],
                 tips: [
@@ -446,21 +490,21 @@
                         description: "Bob curto que quebra o comprimento do rosto.",
                         features: ["Encurta visualmente", "Clássico", "Profissional"],
                         maintenance: "medium",
-                        icon: "💇‍♀️"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36701?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Kitty Cut",
                         description: "Corte fofo com camadas suaves e arredondadas.",
                         features: ["Visual jovem", "Camadas suaves", "Feminino"],
                         maintenance: "medium",
-                        icon: "🐱"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36702?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Blunt Cut com Franja",
                         description: "Corte reto com franja para quebrar a altura.",
                         features: ["Franja estratégica", "Linha limpa", "Encurta o rosto"],
                         maintenance: "low",
-                        icon: "✂️"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36703?w=300&h=300&fit=crop"
                     }
                 ],
                 tips: [
@@ -477,21 +521,21 @@
                         description: "Corte reto que cria uma linha horizontal forte.",
                         features: ["Linha horizontal", "Encurta o rosto", "Moderno"],
                         maintenance: "low",
-                        icon: "✂️"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36704?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Kitty Cut",
                         description: "Camadas arredondadas e suaves.",
                         features: ["Suavidade", "Feminino", "Jovial"],
                         maintenance: "medium",
-                        icon: "🐱"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36702?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Short Bob com Franja",
                         description: "Bob com franja cheia para quebrar a altura.",
                         features: ["Franja cheia", "Proporção equilibrada", "Clássico"],
                         maintenance: "medium",
-                        icon: "💇‍♀️"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36705?w=300&h=300&fit=crop"
                     }
                 ],
                 tips: [
@@ -508,21 +552,21 @@
                         description: "Pixie com textura para não adicionar volume no topo.",
                         features: ["Textura controlada", "Não adiciona volume no topo", "Moderno"],
                         maintenance: "medium",
-                        icon: "✨"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36706?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Side Cut",
                         description: "Assimetria que quebra a largura da testa.",
                         features: ["Quebra simetria", "Visual ousado", "Equilibra proporções"],
                         maintenance: "high",
-                        icon: "⚡"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36695?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Bob Angulado",
                         description: "Bob com ângulo que adiciona volume embaixo.",
                         features: ["Volume na base", "Ângulo estratégico", "Equilibra testa"],
                         maintenance: "medium",
-                        icon: "📐"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36707?w=300&h=300&fit=crop"
                     }
                 ],
                 tips: [
@@ -539,21 +583,21 @@
                         description: "Camadas desestruturadas que suavizam os ângulos.",
                         features: ["Suaviza ângulos", "Movimento natural", "Textura rebelde"],
                         maintenance: "high",
-                        icon: "🐺"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36692?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Shaggy Hair",
                         description: "Textura que quebra a geometria do rosto.",
                         features: ["Quebra geometria", "Movimento fluido", "Natural"],
                         maintenance: "high",
-                        icon: "🌊"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36698?w=300&h=300&fit=crop"
                     },
                     {
                         name: "Butterfly Cut com Franja",
                         description: "Movimento suave com franja para suavizar a testa.",
                         features: ["Movimento suave", "Franja estratégica", "Feminino"],
                         maintenance: "medium",
-                        icon: "🦋"
+                        image: "https://images.unsplash.com/photo-1622838605619-1239b8e36693?w=300&h=300&fit=crop"
                     }
                 ],
                 tips: [
@@ -606,7 +650,7 @@
 
                 cutCard.innerHTML = `
                     <div class="cut-image">
-                        <span style="font-size: 4rem;">${cut.icon}</span>
+                        <img src="${cut.image}" alt="${cut.name}" loading="lazy">
                     </div>
                     <div class="cut-content">
                         <h3 class="cut-name">${cut.name}</h3>
@@ -643,6 +687,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             const faceShape = getUrlParameter('shape') || 'Oval';
             loadCutsForShape(faceShape);
+
+            // Menu Mobile
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                const menu = document.getElementById('mobile-menu');
+                menu.classList.toggle('hidden');
+            });
         });
     </script>
 </body>

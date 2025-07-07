@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hair by Márcio | Diagnóstico Facial 4.0</title>
+    <title>Hair by Marcio - Diagnóstico Facial</title>
+    <!-- Fontes e Ícones -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bibliotecas JS -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --primary: #00D1FF;
@@ -45,65 +50,26 @@
             overflow-x: hidden;
         }
 
+        .logo {
+            font-family: var(--font-tech);
+            background: var(--tech-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        header {
+            background: rgba(10, 11, 16, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 209, 255, 0.1);
+        }
+
         #particles-js {
             position: fixed;
             width: 100%;
             height: 100%;
             z-index: -1;
             background: var(--darker);
-        }
-
-        header {
-            background: rgba(10, 11, 16, 0.9);
-            padding: 1.5rem 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 209, 255, 0.1);
-        }
-
-        header h1 {
-            font-family: var(--font-tech);
-            font-size: 2.2rem;
-            background: var(--tech-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin: 0;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        header p {
-            color: var(--primary);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            letter-spacing: 1px;
-            font-weight: 300;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            gap: 2rem;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-
-        @media (min-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr 1fr;
-            }
         }
 
         /* ===== SCANNER SECTION ===== */
@@ -414,13 +380,7 @@
             font-weight: bold;
             text-align: center;
             margin-top: 2rem;
-            text-shadow: 0 0 15px var(--primary);
-            background: var(--card-bg);
-            padding: 1.5rem 3rem;
-            border-radius: 10px;
-            border: 1px solid var(--primary);
-            box-shadow: var(--neon-shadow);
-            letter-spacing: 2px;
+            text-shadow: 0  daylight: none;
         }
 
         #retryButton, #exploreCutsButton {
@@ -564,6 +524,78 @@
             transform: translateX(3px);
         }
 
+        /* ===== COLOR ANALYSIS STYLES ===== */
+        .season-colors-container {
+            margin-top: 1.5rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .season-description {
+            background: var(--card-bg);
+            padding: 1.2rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            border: 1px solid rgba(0, 209, 255, 0.2);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .color-swatch {
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .color-swatch:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+
+        #season-result {
+            font-family: var(--font-tech);
+            color: var(--gold);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* Estilos específicos para cada estação */
+        .winter-colors .color-swatch { background: #2B2D42; } /* Dark Blue */
+        .winter-colors .color-swatch:nth-child(2) { background: #D90429; } /* Bright Red */
+        .winter-colors .color-swatch:nth-child(3) { background: #EDF2F4; } /* Icy White */
+        .winter-colors .color-swatch:nth-child(4) { background: #8D99AE; } /* Cool Gray */
+
+        .spring-colors .color-swatch { background: #FF9F1C; } /* Coral */
+        .spring-colors .color-swatch:nth-child(2) { background: #FFBF69; } /* Peach */
+        .spring-colors .color-swatch:nth-child(3) { background: #CBF3F0; } /* Mint */
+        .spring-colors .color-swatch:nth-child(4) { background: #2EC4B6; } /* Teal */
+
+        .summer-colors .color-swatch { background: #B8B8FF; } /* Lavender */
+        .summer-colors .color-swatch:nth-child(2) { background: #9381FF; } /* Periwinkle */
+        .summer-colors .color-swatch:nth-child(3) { background: #F8F7FF; } /* Off White */
+        .summer-colors .color-swatch:nth-child(4) { background: #A5A5A5; } /* Soft Gray */
+
+        .autumn-colors .color-swatch { background: #6B2737; } /* Wine */
+        .autumn-colors .color-swatch:nth-child(2) { background: #E08E45; } /* Amber */
+        .autumn-colors .color-swatch:nth-child(3) { background: #F1D3B2; } /* Beige */
+        .autumn-colors .color-swatch:nth-child(4) { background: #4A2C2C; } /* Chocolate */
+
         /* ===== SHARE BUTTONS ===== */
         .share-buttons {
             display: flex;
@@ -692,19 +724,6 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8rem;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-
-            #startButton {
-                padding: 1rem 2rem;
-                font-size: 1.2rem;
-            }
-
             .card h2 {
                 font-size: 1.1rem;
             }
@@ -727,18 +746,51 @@
                 font-size: 1rem;
                 padding: 0.8rem 2rem;
             }
+
+            .color-palette {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
 
-    <header>
-        <h1>HAIR BY MARCIO</h1>
-        <p>DIAGNÓSTICO FACIAL 4.0 | TECNOLOGIA DE PONTA</p>
+    <!-- Header -->
+    <header class="bg-gray-800 text-white sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold logo">HAIR BY MARCIO</h1>
+            <nav class="hidden md:flex space-x-4">
+                <a href="index.html" class="hover:text-primary-300 font-semibold">Início</a>
+                <a href="haircuts.html" class="hover:text-primary-300">Cortes</a>
+                <a href="hair_colors.html" class="hover:text-primary-300">Coloração</a>
+                <a href="index_products.html" class="hover:text-primary-300">Produtos</a>
+                <a href="index_tips.html" class="hover:text-primary-300">Premium</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <!-- Menu Mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-700">
+            <div class="container mx-auto px-4 py-2">
+                <a href="index.html" class="block py-2 hover:text-primary-300">Início</a>
+                <a href="haircuts.html" class="block py-2 hover:text-primary-300">Cortes</a>
+                <a href="hair_colors.html" class="block py-2 hover:text-primary-300">Coloração</a>
+                <a href="index_products.html" class="block py-2 hover:text-primary-300">Produtos</a>
+                <a href="index_tips.html" class="block py-2 hover:text-primary-300">Premium</a>
+            </div>
+        </div>
     </header>
 
-    <div class="container">
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <section class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">DIAGNÓSTICO FACIAL 4.0 | TECNOLOGIA DE PONTA</h1>
+        </section>
+        
         <div class="main-content">
             <section class="scanner-section" id="scannerContainer">
                 <button id="startButton">INICIAR SCAN 3D</button>
@@ -814,6 +866,21 @@
                     </a>
                 </div>
 
+                <div class="card" id="color-analysis-card">
+                    <h2><i class="fas fa-palette"></i> ANÁLISE DE COLORIMETRIA</h2>
+                    <div id="color-analysis-result">
+                        <p id="season-result">AGUARDANDO DIAGNÓSTICO</p>
+                        <div id="season-colors" class="season-colors-container" style="display: none;">
+                            <div class="season-description"></div>
+                            <div class="color-palette"></div>
+                        </div>
+                    </div>
+                    <p>Descubra as melhores cores de cabelo para seu tom de pele</p>
+                    <a href="hair_colors.html" target="_blank" rel="noopener" class="product-link">
+                        INICIAR ANÁLISE DE COR <i class="fas fa-camera"></i>
+                    </a>
+                </div>
+
                 <div class="share-buttons">
                     <button class="share-btn whatsapp" id="share-whatsapp" title="Compartilhar no WhatsApp">
                         <i class="fab fa-whatsapp"></i>
@@ -841,9 +908,21 @@
                 <i class="fas fa-info-circle"></i> Mais Sobre Dicas Premium
             </a>
         </div>
-    </div>
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="hover:text-primary-300"><i class="fab fa-whatsapp fa-lg"></i></a>
+                <a href="#" class="hover:text-primary-300"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" class="hover:text-primary-300"><i class="fab fa-facebook fa-lg"></i></a>
+            </div>
+            <p class="mb-2">Hair by Marcio © 2025. Todos os direitos reservados.</p>
+            <p>Contato: <a href="mailto:contato@hairbymarcio.com" class="hover:text-primary-300">contato@hairbymarcio.com</a></p>
+        </div>
+    </footer>
+
     <script>
         // Configuração do Particles.js
         particlesJS("particles-js", {
@@ -863,9 +942,6 @@
                     "stroke": {
                         "width": 0,
                         "color": "#000000"
-                    },
-                    "polygon": {
-                        "nb_sides": 5
                     }
                 },
                 "opacity": {
@@ -962,7 +1038,12 @@
             resultContainer: document.getElementById('resultContainer'),
             resultMessage: document.getElementById('resultMessage'),
             retryBtn: document.getElementById('retryButton'),
-            exploreCutsBtn: document.getElementById('exploreCutsButton')
+            exploreCutsBtn: document.getElementById('exploreCutsButton'),
+            startColorAnalysisBtn: document.getElementById('startColorAnalysis'),
+            seasonResult: document.getElementById('season-result'),
+            seasonColorsContainer: document.getElementById('season-colors'),
+            seasonDescription: document.querySelector('.season-description'),
+            colorPalette: document.querySelector('.color-palette')
         };
 
         // Configurações
@@ -1001,7 +1082,8 @@
             measurementBuffer: [],
             bufferSize: 8,
             faceShape: null,
-            alignmentCount: 0
+            alignmentCount: 0,
+            colorAnalysisDone: false
         };
 
         // Inicializa o Face Mesh
@@ -1041,7 +1123,15 @@
                 y: 0,
                 opacity: 1,
                 ease: "power3.out",
-                delay: 0.6,
+                delay: 0.6
+            });
+
+            gsap.to("#color-analysis-card", {
+                duration: 0.8,
+                y: 0,
+                opacity: 1,
+                ease: "power3.out",
+                delay: 0.8,
                 onComplete: () => {
                     document.querySelectorAll('.card').forEach(card => {
                         card.classList.add('visible');
@@ -1068,7 +1158,8 @@
                 currentResultImage: null,
                 measurementBuffer: [],
                 faceShape: null,
-                alignmentCount: 0
+                alignmentCount: 0,
+                colorAnalysisDone: false
             };
 
             // Configura dimensões do canvas
@@ -1102,7 +1193,10 @@
             document.getElementById('jaw-width').textContent = "--";
             document.getElementById('face-height').textContent = "--";
             document.getElementById('face-ratio').textContent = "--";
-            document.getElementById('face-shape-description-result').textContent = ""; // Limpa a descrição
+            document.getElementById('face-shape-description-result').textContent = "";
+            elements.seasonResult.textContent = "AGUARDANDO DIAGNÓSTICO";
+            elements.seasonColorsContainer.style.display = 'none';
+            state.colorAnalysisDone = false;
 
             // Inicia a câmera
             new Camera(elements.video, {
@@ -1507,72 +1601,54 @@
         function generateRecommendations(faceShape, measurements) {
             let hairstyleSuggestion = "";
             let avoidSuggestion = "";
-            let productSuggestion = "";
-            let productLink = "#";
+            let productSuggestion = "Produtos personalizados para seu cabelo";
+            let productLink = "index_products.html";
             let hairstyleLink = `haircuts.html?shape=${faceShape}`;
 
             const sugestoes = {
                 Oval: {
                     corte: "Pixie Cut • Wolf Cut • Butterfly Cut • Long Bob",
                     evitar: "Franjas muito pesadas que cobrem a testa",
-                    produto: "Cera modeladora para textura",
-                    link: "https://mercadolivre.com.br/cera-modeladora-textura",
                     descricao: "O rosto oval é considerado o formato ideal, com proporções equilibradas e testa ligeiramente mais larga que o queixo. É versátil e se adapta a quase todos os estilos."
                 },
                 Redondo: {
                     corte: "Side Cut • Nirvana Cut • Pixie assimétrico • Shaggy Hair",
                     evitar: "Cortes arredondados sem volume no topo",
-                    produto: "Spray de volume raiz",
-                    link: "https://mercadolivre.com.br/spray-volume-raiz",
                     descricao: "O rosto redondo possui altura e largura similares, com linhas suaves e sem ângulos definidos. O objetivo é criar altura e ângulos para alongar visualmente."
                 },
                 Quadrado: {
                     corte: "Shaggy Hair • Octopus Cut • Wolf Cut com franja",
                     evitar: "Blunt Cut reto na altura da mandíbula",
-                    produto: "Pomada para definição de cachos",
-                    link: "https://mercadolivre.com.br/pomada-definicao-cachos",
                     descricao: "O rosto quadrado apresenta testa e mandíbula com larguras similares e ângulos marcados. A estratégia é suavizar a mandíbula com texturas e camadas."
                 },
                 Retangular: {
                     corte: "Short Bob • Kitty Cut • Blunt Cut com franja",
                     evitar: "Long Bob sem camadas ou volume lateral",
-                    produto: "Óleo de argan para finalização",
-                    link: "https://mercadolivre.com.br/oleo-argan-capilar",
                     descricao: "O rosto retangular é mais longo do que largo, com testa e mandíbula alinhadas. O objetivo é encurtar visualmente o rosto com franjas e volume lateral."
                 },
                 Oblongo: {
                     corte: "Blunt Cut • Kitty Cut • Short Bob com franja",
                     evitar: "Cortes muito longos sem camadas",
-                    produto: "Creme de pentear para peso controlado",
-                    link: "https://mercadolivre.com.br/creme-pentear-leve",
                     descricao: "O rosto oblongo é similar ao retangular, sendo mais longo do que largo, mas com ângulos mais suaves e menos definidos. A ideia é criar linhas horizontais para quebrar a altura."
                 },
                 "Triângulo Invertido": {
                     corte: "Pixie Cut texturizado • Side Cut • Bob angulado",
                     evitar: "Topetes altos ou volume excessivo no topo",
-                    produto: "Gel de fixação média",
-                    link: "https://mercadolivre.com.br/gel-fixacao-media",
                     descricao: "O rosto triângulo invertido (ou coração) possui testa larga e queixo estreito. A estratégia é equilibrar a testa larga com volume na parte inferior do rosto."
                 },
                 Diamante: {
                     corte: "Wolf Cut • Shaggy Hair • Butterfly Cut com franja",
                     evitar: "Cortes muito simétricos ou lisos",
-                    produto: "Mousse de volume",
-                    link: "https://mercadolivre.com.br/mousse-volume",
                     descricao: "O rosto diamante tem maçãs do rosto mais largas, testa e queixo mais estreitos. O objetivo é suavizar os ângulos com texturas e movimento."
                 },
                 Triângulo: {
                     corte: "Long Bob • Shaggy Hair • Cortes com volume nas laterais",
                     evitar: "Cortes que adicionam volume no topo",
-                    produto: "Spray texturizador",
-                    link: "https://mercadolivre.com.br/spray-texturizador",
                     descricao: "O rosto triângulo (ou pera) possui mandíbula mais larga e testa mais estreita. A estratégia é adicionar volume na parte superior para equilibrar as proporções."
                 },
                 Indefinido: {
                     corte: "Todos os cortes podem ser avaliados em consulta",
                     evitar: "Nenhuma restrição identificada",
-                    produto: "Kit básico de cuidados",
-                    link: "https://mercadolivre.com.br/kit-cuidados-capilares",
                     descricao: "Não foi possível determinar um formato de rosto específico. Recomenda-se uma consulta com um profissional para uma análise mais detalhada."
                 }
             };
@@ -1583,9 +1659,9 @@
             document.getElementById('hairstyle-suggestion').textContent = currentSuggestion.corte;
             document.getElementById('avoid-suggestion').textContent = currentSuggestion.evitar;
             document.getElementById('hairstyle-link').href = hairstyleLink;
-            document.getElementById('product-suggestion').textContent = currentSuggestion.produto;
-            document.getElementById('product-link').href = currentSuggestion.link;
-            document.getElementById('face-shape-description-result').textContent = currentSuggestion.descricao; // Adiciona a descrição aqui
+            document.getElementById('product-suggestion').textContent = productSuggestion;
+            document.getElementById('product-link').href = productLink;
+            document.getElementById('face-shape-description-result').textContent = currentSuggestion.descricao;
         }
 
         // Completa o scan e mostra resultados
@@ -1643,7 +1719,6 @@
             }
 
             // Captura a imagem do resultado
-            // Garante que html2canvas esteja carregado antes de usar
             if (typeof html2canvas !== 'undefined') {
                 captureResultImage();
             } else {
@@ -1691,6 +1766,171 @@
                 setupShareButtons.initialized = true;
             }
         }
+
+        // ===== COLOR ANALYSIS FUNCTIONS =====
+        function startColorAnalysis() {
+            if (state.colorAnalysisDone) {
+                showColorResults();
+                return;
+            }
+
+            Swal.fire({
+                title: 'ANÁLISE DE COLORIMETRIA',
+                html: `
+                    <div style="text-align: left; margin-top: 1rem;">
+                        <p style="margin-bottom: 1rem;">Para melhores resultados:</p>
+                        <ul style="padding-left: 1.5rem;">
+                            <li>Posicione-se em luz natural</li>
+                            <li>Remova qualquer maquiagem</li>
+                            <li>Certifique-se de que seu rosto está bem iluminado</li>
+                            <li>Evite sombras no rosto</li>
+                        </ul>
+                    </div>
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'INICIAR ANÁLISE',
+                cancelButtonText: 'CANCELAR',
+                background: 'var(--card-bg)',
+                color: 'var(--light)',
+                confirmButtonColor: 'var(--primary)',
+                cancelButtonColor: 'var(--error)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    analyzeSkinTone();
+                }
+            });
+        }
+
+        function analyzeSkinTone() {
+            elements.startColorAnalysisBtn.disabled = true;
+            elements.startColorAnalysisBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ANALISANDO...';
+
+            // Simulação de análise (em um sistema real, isso seria feito com análise de imagem)
+            setTimeout(() => {
+                const skinTone = determineSkinTone();
+                const season = determineSeason(skinTone);
+                
+                state.colorAnalysisDone = true;
+                showColorResults(season);
+                
+                elements.startColorAnalysisBtn.disabled = false;
+                elements.startColorAnalysisBtn.innerHTML = '<i class="fas fa-sync-alt"></i> VER RESULTADO';
+            }, 3000);
+        }
+
+        function determineSkinTone() {
+            // Em um sistema real, isso seria determinado pela análise de imagem
+            // Aqui estamos simulando com valores aleatórios
+            const tones = ['clara', 'média', 'escura'];
+            const undertones = ['quente', 'neutra', 'fria'];
+            
+            return {
+                tone: tones[Math.floor(Math.random() * tones.length)],
+                undertone: undertones[Math.floor(Math.random() * undertones.length)]
+            };
+        }
+
+        function determineSeason(skinTone) {
+            const { tone, undertone } = skinTone;
+            
+            // Lógica simplificada para determinar a estação
+            if (tone === 'clara' && undertone === 'fria') return 'Inverno';
+            if (tone === 'clara' && undertone === 'quente') return 'Primavera';
+            if (tone === 'média' && undertone === 'quente') return 'Outono';
+            if (tone === 'escura' && undertone === 'fria') return 'Inverno';
+            if (tone === 'escura' && undertone === 'quente') return 'Outono';
+            if (undertone === 'neutra') return 'Verão';
+            
+            // Padrão para combinações não especificadas
+            return ['Inverno', 'Primavera', 'Verão', 'Outono'][Math.floor(Math.random() * 4)];
+        }
+
+        function showColorResults(season = null) {
+            if (!season) {
+                // Se nenhuma estação for fornecida, use uma aleatória (para demonstração)
+                season = ['Inverno', 'Primavera', 'Verão', 'Outono'][Math.floor(Math.random() * 4)];
+            }
+
+            elements.seasonResult.textContent = `ESTAÇÃO: ${season.toUpperCase()}`;
+            elements.seasonColorsContainer.style.display = 'block';
+            elements.seasonColorsContainer.className = `season-colors-container ${season.toLowerCase()}-colors`;
+            
+            // Limpa o conteúdo anterior
+            elements.seasonDescription.innerHTML = '';
+            elements.colorPalette.innerHTML = '';
+            
+            // Adiciona a descrição da estação
+            const seasonData = getSeasonData(season);
+            elements.seasonDescription.innerHTML = `<p><strong>${season}</strong>: ${seasonData.description}</p>`;
+            
+            // Adiciona as cores da paleta
+            seasonData.colors.forEach((color, index) => {
+                const colorSwatch = document.createElement('div');
+                colorSwatch.className = 'color-swatch';
+                colorSwatch.style.backgroundColor = color.hex;
+                colorSwatch.textContent = color.name;
+                colorSwatch.title = color.name;
+                elements.colorPalette.appendChild(colorSwatch);
+            });
+            
+            // Animação de entrada
+            gsap.from(".season-colors-container", {
+                duration: 0.8,
+                y: 20,
+                opacity: 0,
+                ease: "power3.out"
+            });
+        }
+
+        function getSeasonData(season) {
+            const seasons = {
+                'Inverno': {
+                    description: "Tons frios e intensos combinam com você. Cores como preto, branco puro, azul royal e vermelho brilhante realçam sua beleza natural.",
+                    colors: [
+                        { name: "Azul Royal", hex: "#2B2D42" },
+                        { name: "Vermelho Brilhante", hex: "#D90429" },
+                        { name: "Branco Gelo", hex: "#EDF2F4" },
+                        { name: "Cinza Prateado", hex: "#8D99AE" }
+                    ]
+                },
+                'Primavera': {
+                    description: "Tons quentes e claros são ideais. Cores como coral, pêssego, verde menta e turquesa suave harmonizam com seu tom de pele.",
+                    colors: [
+                        { name: "Coral", hex: "#FF9F1C" },
+                        { name: "Pêssego", hex: "#FFBF69" },
+                        { name: "Verde Menta", hex: "#CBF3F0" },
+                        { name: "Turquesa", hex: "#2EC4B6" }
+                    ]
+                },
+                'Verão': {
+                    description: "Tons suaves e frios são perfeitos. Cores pastel e neutras como lavanda, azul claro, rosa pálido e cinza suave complementam sua aparência.",
+                    colors: [
+                        { name: "Lavanda", hex: "#B8B8FF" },
+                        { name: "Azul Claro", hex: "#9381FF" },
+                        { name: "Branco Suave", hex: "#F8F7FF" },
+                        { name: "Cinza Suave", hex: "#A5A5A5" }
+                    ]
+                },
+                'Outono': {
+                    description: "Tons quentes e terrosos são os melhores. Cores como vinho, âmbar, bege e chocolate realçam seus traços naturais.",
+                    colors: [
+                        { name: "Vinho", hex: "#6B2737" },
+                        { name: "Âmbar", hex: "#E08E45" },
+                        { name: "Bege", hex: "#F1D3B2" },
+                        { name: "Chocolate", hex: "#4A2C2C" }
+                    ]
+                }
+            };
+            
+            return seasons[season] || seasons['Inverno'];
+        }
+
+        // Mobile Menu Script
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
     </script>
 </body>
 </html>
